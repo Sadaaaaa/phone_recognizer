@@ -51,6 +51,7 @@ public class CheckPhoneServiceImpl implements CheckPhoneService {
         if (countriesWithGroups.size() > 1) {
             String countriesString = countriesWithGroups.stream()
                     .map(PhoneCode::getCountry)
+                    .distinct()
                     .collect(Collectors.joining(" or "));
             return ResponseEntity.ok().body(countriesString);
         } else if (countriesWithGroups.size() == 1) {
