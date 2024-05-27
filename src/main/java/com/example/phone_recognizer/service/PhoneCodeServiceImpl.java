@@ -32,7 +32,7 @@ public class PhoneCodeServiceImpl implements PhoneCodeService {
     }
 
     @PostConstruct
-    private void fetchPhoneCodes() throws IOException {
+    public void fetchPhoneCodes() throws IOException {
         // fetching markup
         Document document = Jsoup.connect(wikiLink).get();
         // select table

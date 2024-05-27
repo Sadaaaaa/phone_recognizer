@@ -21,14 +21,14 @@ public class CheckPhoneController {
     @GetMapping("/check")
     public ModelAndView checkPhone(@RequestParam String phone) {
         ModelAndView model = new ModelAndView();
-        ResponseEntity<?> response = checkPhoneService.checkPhone(phone);
 
-        if (phone == null || !phone.matches("\\d+") || phone.length() < 10 || phone.startsWith("0")
-                || response.getBody() == null) {
+        if (phone == null || !phone.matches("\\d+") || phone.length() < 10 || phone.startsWith("0")) {
             model.addObject("errorMessage", "Wrong phone number!");
             model.setViewName("index");
             return model;
         }
+
+        ResponseEntity<?> response = checkPhoneService.checkPhone(phone);
 
         model.addObject("country", response.getBody());
         model.setViewName("index");
