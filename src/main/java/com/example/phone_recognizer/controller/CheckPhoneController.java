@@ -23,7 +23,7 @@ public class CheckPhoneController {
         ModelAndView model = new ModelAndView();
         ResponseEntity<?> response = checkPhoneService.checkPhone(phone);
 
-        if (phone == null || !phone.matches("\\d+") || phone.length() < 11 || phone.startsWith("0")
+        if (phone == null || !phone.matches("\\d+") || phone.length() < 10 || phone.startsWith("0")
                 || response.getBody() == null) {
             model.addObject("errorMessage", "Wrong phone number!");
             model.setViewName("index");
