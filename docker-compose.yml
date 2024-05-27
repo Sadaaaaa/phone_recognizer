@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  backend:
+    platform: linux/amd64
+    build: ./
+    image: phone_backend
+    container_name: phone_backend
+    ports:
+      - "8088:8088"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/prdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    networks:
+      - app-network
+
+  db:
+    image: postgres:14.5-alpine
+    container_name: phone_database
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=prdb
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
+    networks:
+      - app-network
+
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge

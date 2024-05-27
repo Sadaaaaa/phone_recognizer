@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Проверка телефонного номера</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .country-info {
+            text-align: center;
+            font-size: 2em;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding-top: 10px;
+            border-radius: 5px;
+        }
+        .return-button {
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            margin-bottom: 10px;
+        }
+
+        .alert-danger {
+            padding-top: 22px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="mt-5">Phone number verification</h2>
+    <form th:action="@{/check}" method="get">
+        <div class="form-group">
+            <label>Enter phone number:</label>
+            <input type="text" class="form-control" name="phone" placeholder="Enter phone number">
+        <small class="form-text text-muted">Hint: The phone number should consist of digits only, for example 790012345678</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Check phone number</button>
+        <a href="http://localhost:8088" class="btn btn-secondary return-button">Clear fields</a>
+    </form>
+    <div th:if="${country}" class="country-info">
+        <p th:text="'Country: ' + ${country}"></p>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+</div>
+</body>
+</html>
