@@ -19,15 +19,19 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class PhoneCodeServiceImpl implements PhoneCodeService {
+public class FetchPhoneTableServiceImpl implements FetchPhoneTableService {
 
     @Value("${wikiLink}")
     private String wikiLink;
     private final List<String> countriesWithGroups = PhoneCodeEntityHelper.getCountriesWithGroup();
     private final PhoneCodeRepository phoneCodeRepository;
 
+    public List<String> getCountriesWithGroups() {
+        return countriesWithGroups;
+    }
+
     @Autowired
-    public PhoneCodeServiceImpl(PhoneCodeRepository phoneCodeRepository) {
+    public FetchPhoneTableServiceImpl(PhoneCodeRepository phoneCodeRepository) {
         this.phoneCodeRepository = phoneCodeRepository;
     }
 
@@ -55,16 +59,16 @@ public class PhoneCodeServiceImpl implements PhoneCodeService {
         // save to db
         List<PhoneCode> savedToDb = phoneCodeRepository.saveAll(phoneCodes);
 
+        log.warn("Entities saved: {}, from {}", savedToDb.size(), phoneCodes.size());
         if (savedToDb.size() == phoneCodes.size()) {
-            log.warn("Data saved to db!");
+            log.warn("All data saved to db!");
         } else {
             log.error("Error saving data to db!");
         }
     }
 
-    private List<PhoneCode> phoneCodesParser(String country, String phoneCode) {
+    public List<PhoneCode> phoneCodesParser(String country, String phoneCode) {
         List<PhoneCode> result = new ArrayList<>();
-        log.warn("Parsing phone code: {}", phoneCode);
         int bracketIndex = phoneCode.indexOf('(');
 
         if (bracketIndex != -1) {
@@ -90,7 +94,7 @@ public class PhoneCodeServiceImpl implements PhoneCodeService {
         return result;
     }
 
-    private PhoneCode buildPhoneCode(String country, String countryCode, String phoneCode) {
+    public PhoneCode buildPhoneCode(String country, String countryCode, String phoneCode) {
         return PhoneCode.builder()
                 .country(country)
                 .code(countryCode)

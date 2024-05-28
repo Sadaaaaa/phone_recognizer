@@ -39,7 +39,7 @@ public class CheckPhoneServiceImpl implements CheckPhoneService {
 
             if (entities.size() == 1) {
                 return ResponseEntity.ok().body(entities.get(0).getCountry());
-            } else if (entities.size() == 0) {
+            } else if (entities.size() == 0 || i == phoneCode.length() - 1) {
                 return this.findCountryWithGroup(countriesWithGroups, phone);
             }
         }
@@ -47,7 +47,7 @@ public class CheckPhoneServiceImpl implements CheckPhoneService {
         return ResponseEntity.internalServerError().body("Error checking phone number!");
     }
 
-    private ResponseEntity<?> findCountryWithGroup(List<PhoneCode> countriesWithGroups, String phone) {
+    public ResponseEntity<?> findCountryWithGroup(List<PhoneCode> countriesWithGroups, String phone) {
         if (countriesWithGroups.size() > 1) {
             String countriesString = countriesWithGroups.stream()
                     .map(PhoneCode::getCountry)
@@ -56,7 +56,7 @@ public class CheckPhoneServiceImpl implements CheckPhoneService {
             return ResponseEntity.ok().body(countriesString);
         } else if (countriesWithGroups.size() == 1) {
             return ResponseEntity.ok().body(countriesWithGroups.get(0).getCountry());
-        } else  {
+        } else {
             return ResponseEntity.ok().body(PhoneCodeEntityHelper.getDefaultCountry(phone));
         }
     }

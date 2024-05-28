@@ -1,4 +1,4 @@
 package com.example.phone_recognizer.service;
 
-public interface PhoneCodeService {
+public interface FetchPhoneTableService {
 }
