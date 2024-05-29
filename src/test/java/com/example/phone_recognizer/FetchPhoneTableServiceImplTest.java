@@ -49,6 +49,9 @@ public class FetchPhoneTableServiceImplTest {
 
     @Test
     void fetchPhoneCodesTest() throws IOException {
+        PhoneCodeRepository mockPhoneCodeRepository = mock(PhoneCodeRepository.class);
+        FetchPhoneTableServiceImpl phoneCodeService = new FetchPhoneTableServiceImpl(mockPhoneCodeRepository);
+
         Connection mockConnection = mock(Connection.class);
         Document mockDocument = mock(Document.class);
         Element mockTable = mock(Element.class);
@@ -74,13 +77,19 @@ public class FetchPhoneTableServiceImplTest {
         try (MockedStatic<Jsoup> jsoupMockedStatic = mockStatic(Jsoup.class)) {
             jsoupMockedStatic.when(() -> Jsoup.connect(wikiLink)).thenReturn(mockConnection);
             List<PhoneCode> mockPhoneCodes = new ArrayList<>();
-            mockPhoneCodes.add(new PhoneCode());
+            mockPhoneCodes.add(PhoneCode.builder()
+                    .country("United States")
+                    .code("1")
+                    .defaultCountry("probably North America")
+                    .description("1")
+                    .isHasGroup(true)
+                    .build());
 
-            when(phoneCodeRepository.saveAll(any())).thenReturn(mockPhoneCodes);
+            when(mockPhoneCodeRepository.saveAll(any())).thenReturn(mockPhoneCodes);
 
             phoneCodeService.fetchPhoneCodes();
 
-            verify(phoneCodeRepository, times(1)).saveAll(any());
+            verify(mockPhoneCodeRepository, times(1)).saveAll(any());
         }
     }
 
@@ -110,8 +119,8 @@ public class FetchPhoneTableServiceImplTest {
         assertEquals(country, result.getCountry());
         assertEquals(countryCode, result.getCode());
         assertEquals(phoneCode, result.getDescription());
-        assertEquals(PhoneCodeEntityHelper.getDefaultCountry(countryCode), result.getDefaultCountry());
-        assertEquals(phoneCodeService.getCountriesWithGroups().contains(country), result.getIsHasGroup());
+        assertEquals(PhoneCodeEntityHelper.getDefaultArea(countryCode), result.getDefaultCountry());
+        assertEquals(phoneCodeService.getCountriesWithGroups().containsKey(country), result.getIsHasGroup());
     }
 
 }

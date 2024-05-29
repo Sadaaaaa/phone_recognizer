@@ -59,7 +59,7 @@ class CheckPhoneServiceImplTest {
 
         ResponseEntity<?> response = checkPhoneService.checkPhone(phone);
 
-        assertEquals(ResponseEntity.ok().body(PhoneCodeEntityHelper.getDefaultCountry(phone)), response);
+        assertEquals(ResponseEntity.ok().body(PhoneCodeEntityHelper.getDefaultArea(phone)), response);
     }
 
     @Test
@@ -126,6 +126,6 @@ class CheckPhoneServiceImplTest {
 
         ResponseEntity<?> response = checkPhoneService.findCountryWithGroup(countriesWithGroups, phone);
 
-        assertEquals(ResponseEntity.ok().body(PhoneCodeEntityHelper.getDefaultCountry(phone)), response);
+        assertEquals(ResponseEntity.ok().body(PhoneCodeEntityHelper.getDefaultArea(phone)), response);
     }
 }

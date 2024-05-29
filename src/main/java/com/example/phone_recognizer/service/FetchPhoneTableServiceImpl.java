@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -23,10 +25,10 @@ public class FetchPhoneTableServiceImpl implements FetchPhoneTableService {
 
     @Value("${wikiLink}")
     private String wikiLink;
-    private final List<String> countriesWithGroups = PhoneCodeEntityHelper.getCountriesWithGroup();
+    private final Map<String, String> countriesWithGroups = PhoneCodeEntityHelper.getCountriesWithGroupMap();
     private final PhoneCodeRepository phoneCodeRepository;
 
-    public List<String> getCountriesWithGroups() {
+    public Map<String, String> getCountriesWithGroups() {
         return countriesWithGroups;
     }
 
@@ -59,11 +61,12 @@ public class FetchPhoneTableServiceImpl implements FetchPhoneTableService {
         // save to db
         List<PhoneCode> savedToDb = phoneCodeRepository.saveAll(phoneCodes);
 
-        log.warn("Entities saved: {}, from {}", savedToDb.size(), phoneCodes.size());
+        log.warn("Entities saved: {} from {}", savedToDb.size(), phoneCodes.size());
         if (savedToDb.size() == phoneCodes.size()) {
-            log.warn("All data saved to db!");
+            log.warn("All parsed data saved to db!");
+            this.saveIfSomeCountriesWithGroupMissed(savedToDb, countriesWithGroups);
         } else {
-            log.error("Error saving data to db!");
+            log.error("Error saving parsed data to db!");
         }
     }
 
@@ -98,9 +101,21 @@ public class FetchPhoneTableServiceImpl implements FetchPhoneTableService {
         return PhoneCode.builder()
                 .country(country)
                 .code(countryCode)
-                .defaultCountry(PhoneCodeEntityHelper.getDefaultCountry(countryCode))
+                .defaultCountry(PhoneCodeEntityHelper.getDefaultArea(countryCode))
                 .description(phoneCode)
-                .isHasGroup(countriesWithGroups.contains(country))
+                .isHasGroup(countriesWithGroups.containsKey(country))
                 .build();
+    }
+
+    // all countries with groups from object "Map<String, String> countriesWithGroups" should be saved to db
+    private void saveIfSomeCountriesWithGroupMissed(List<PhoneCode> savedToDb, Map<String, String> countriesWithGroups) {
+        List<String> savedCountriesWithGroups = savedToDb.stream().filter(PhoneCode::getIsHasGroup).map(PhoneCode::getCountry).toList();
+        List<String> countriesWithGroupNames = new ArrayList<>(countriesWithGroups.keySet());
+
+        if (savedCountriesWithGroups.size() < countriesWithGroupNames.size()) {
+            countriesWithGroupNames.removeAll(savedCountriesWithGroups);
+            countriesWithGroupNames.forEach(country ->
+                    phoneCodeRepository.save(this.buildPhoneCode(country, countriesWithGroups.get(country), countriesWithGroups.get(country))));
+        }
     }
 }

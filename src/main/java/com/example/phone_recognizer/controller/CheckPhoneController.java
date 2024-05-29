@@ -20,9 +20,17 @@ public class CheckPhoneController {
 
     @GetMapping("/check")
     public ModelAndView checkPhone(@RequestParam String phone) {
+
+        // remove all whitespaces & trim
+        phone = phone.replaceAll("\\s+", "").trim();
+
+        if (phone.startsWith("+")) {
+            phone = phone.substring(1);
+        }
+
         ModelAndView model = new ModelAndView();
 
-        if (phone == null || !phone.matches("\\d+") || phone.length() < 10 || phone.startsWith("0")) {
+        if (!phone.matches("\\d+") || phone.length() < 10 || phone.startsWith("0")) {
             model.addObject("errorMessage", "Wrong phone number!");
             model.setViewName("index");
             return model;
